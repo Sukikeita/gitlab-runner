@@ -1,0 +1,20 @@
+*.iml
+config.toml
+.project
+out
+builds/
+commands/helpers/archive.zip
+executors/docker/bindata.go
+dockerfiles/alpine/gitlab-runner-linux-amd64
+dockerfiles/alpine/checksums.sha256
+dockerfiles/build/gitlab-runner-helper
+dockerfiles/ubuntu/gitlab-runner_amd64.deb
+dockerfiles/ubuntu/checksums.sha256
+.idea/
+.editorconfig
+tests/ubuntu/.vagrant
+artifacts
+tmp/gitlab-test
+
+# Ignore the generated binary
+/gitlab-runner

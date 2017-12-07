@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+IS_LATEST=${IS_LATEST:-}
+ref_tag=${CI_COMMIT_REF_NAME:-master}
+
+REVISION=${REVISION:-}
+if [[ -z "${REVISION}" ]]; then
+  REVISION=$(git rev-parse --short=8 HEAD || echo "unknown")
+fi
+
+if [[ "${ref_tag}" = "master" ]]; then
+    ref_tag=bleeding
+fi
+
+_docker() {
+    docker ${@}
+}
+
+build() {
+    echo -e "\033[1mBuilding image: \033[32m${1}\033[0m"
+    _docker build -t "${1}" "${2}"
+}
+
+import() {
+    echo -e "\033[1mImporting image: \033[32m${2}\033[0m"
+    _docker import "${1}" "${2}"
+}
+
+tag() {
+    echo -e "\033[1mTagging image: \033[32m${2}\033[0m"
+    _docker tag "${1}" "${2}"
+}
+
+tag_latest() {
+    if [[ -z "${IS_LATEST}" ]]; then
+        return
+    fi
+
+    tag "${@}"
+}
+
+push() {
+    echo -e "\033[1mPushing image: \033[32m${1}\033[0m"
+    _docker push "${1}"
+}
+
+push_latest() {
+    if [[ -z "${IS_LATEST}" ]]; then
+        return
+    fi
+
+    push "${@}"
+}
+
+release_docker_helper_images() {
+    helper_image_x86_64="gitlab/gitlab-runner-helper:x86_64-${REVISION}"
+    helper_image_x86_64_latest="gitlab/gitlab-runner-helper:x86_64-latest"
+    helper_image_arm="gitlab/gitlab-runner-helper:arm-${REVISION}"
+    helper_image_arm_latest="gitlab/gitlab-runner-helper:arm-latest"
+
+    import out/docker/prebuilt-x86_64.tar.xz ${helper_image_x86_64}
+    import out/docker/prebuilt-arm.tar.xz ${helper_image_arm}
+
+    tag_latest ${helper_image_x86_64} ${helper_image_x86_64_latest}
+    tag_latest ${helper_image_arm} ${helper_image_arm_latest}
+
+
+    push ${helper_image_x86_64}
+    push ${helper_image_arm}
+
+    push_latest ${helper_image_x86_64_latest}
+    push_latest ${helper_image_arm_latest}
+}
+
+login() {
+    _docker login --username "${1}" --password "${2}" "${3}"
+}
+
+logout() {
+    _docker logout "${1}"
+}
+
+cp out/deb/gitlab-runner_amd64.deb dockerfiles/ubuntu/
+cp dockerfiles/checksums.sha256 dockerfiles/ubuntu
+cp out/binaries/gitlab-runner-linux-amd64 dockerfiles/alpine
+cp dockerfiles/checksums.sha256 dockerfiles/alpine
+
+build "gitlab/gitlab-runner:ubuntu-${ref_tag}" dockerfiles/ubuntu
+build "gitlab/gitlab-runner:alpine-${ref_tag}" dockerfiles/alpine
+
+tag "gitlab/gitlab-runner:ubuntu-${ref_tag}" "gitlab/gitlab-runner:${ref_tag}"
+
+tag_latest "gitlab/gitlab-runner:ubuntu-${ref_tag}" gitlab/gitlab-runner:ubuntu
+tag_latest "gitlab/gitlab-runner:ubuntu-${ref_tag}" gitlab/gitlab-runner:latest
+tag_latest "gitlab/gitlab-runner:alpine-${ref_tag}" gitlab/gitlab-runner:alpine
+
+if [[ -n "${CI_REGISTRY}" ]] && [[ -n "${CI_REGISTRY_IMAGE}" ]]; then
+    tag "gitlab/gitlab-runner:ubuntu-${ref_tag}" "${CI_REGISTRY_IMAGE}:ubuntu-${ref_tag}"
+    tag "gitlab/gitlab-runner:alpine-${ref_tag}" "${CI_REGISTRY_IMAGE}:alpine-${ref_tag}"
+    tag "gitlab/gitlab-runner:${ref_tag}" "${CI_REGISTRY_IMAGE}:${ref_tag}"
+
+    tag_latest gitlab/gitlab-runner:ubuntu "${CI_REGISTRY_IMAGE}:ubuntu"
+    tag_latest gitlab/gitlab-runner:latest "${CI_REGISTRY_IMAGE}:latest"
+    tag_latest gitlab/gitlab-runner:alpine "${CI_REGISTRY_IMAGE}:alpine"
+
+    if [[ -n "${CI_REGISTRY_USER}" ]] && [[ -n "${CI_REGISTRY_PASSWORD}" ]]; then
+        login "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+
+        push "${CI_REGISTRY_IMAGE}:ubuntu-${ref_tag}"
+        push "${CI_REGISTRY_IMAGE}:alpine-${ref_tag}"
+        push "${CI_REGISTRY_IMAGE}:${ref_tag}"
+
+        push_latest "${CI_REGISTRY_IMAGE}:ubuntu"
+        push_latest "${CI_REGISTRY_IMAGE}:latest"
+        push_latest "${CI_REGISTRY_IMAGE}:alpine"
+
+        logout "${CI_REGISTRY}"
+    fi
+fi
+
+if [[ -n "${DOCKER_HUB_USER}" ]] && [[ -n "${DOCKER_HUB_PASSWORD}" ]]; then
+    login "${DOCKER_HUB_USER}" "${DOCKER_HUB_PASSWORD}"
+
+    push "gitlab/gitlab-runner:ubuntu-${ref_tag}"
+    push "gitlab/gitlab-runner:alpine-${ref_tag}"
+    push "gitlab/gitlab-runner:${ref_tag}"
+
+    push_latest gitlab/gitlab-runner:ubuntu
+    push_latest gitlab/gitlab-runner:latest
+    push_latest gitlab/gitlab-runner:alpine
+
+    release_docker_helper_images
+
+    logout
+fi
