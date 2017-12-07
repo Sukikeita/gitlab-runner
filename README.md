@@ -8,7 +8,7 @@ The old name of this project was GitLab CI Multi Runner but please use "GitLab R
 
 ![Build Status](https://gitlab.com/gitlab-org/gitlab-runner/badges/master/build.svg)
 
-## Runner and GitLab CE/EE compatibility
+## Runner and GitLab CE/EE compatibility--Runner和GitLab的兼容性
 
 For a list of compatible versions between GitLab and GitLab Runner, consult
 the [compatibility chart](https://docs.gitlab.com/runner/#compatibility-chart).
@@ -39,16 +39,16 @@ try upgrading to the latest version. If the issue persists, reopen this issue
 or merge request with the relevant information.
 ```
 
-## Documentation
+## Documentation--文档
 
 The documentation source files can be found under the [docs/](docs/) directory. You can
 read the documentation online at https://docs.gitlab.com/runner/.
 
-## Requirements
+## Requirements--安装Runner的要求
 
 [Read about the requirements of GitLab Runner.](https://docs.gitlab.com/runner/#requirements)
 
-## Features
+## Features--Runner的功能
 
 [Read about the features of GitLab Runner.](https://docs.gitlab.com/runner/#features)
 
@@ -56,31 +56,31 @@ read the documentation online at https://docs.gitlab.com/runner/.
 
 [Read about what options each executor can offer.](https://docs.gitlab.com/runner/executors/#compatibility-chart)
 
-## Install GitLab Runner
+## Install GitLab Runner--安装GitLab Runner
 
 Visit the [installation documentation](https://docs.gitlab.com/runner/install/).
 
-## Use GitLab Runner
+## Use GitLab Runner--使用Runner
 
 See [https://docs.gitlab.com/runner/#using-gitlab-runner](https://docs.gitlab.com/runner/#using-gitlab-runner).
 
-## Select executor
+## Select executor--选择执行器
 
 See [https://docs.gitlab.com/runner/executors/#selecting-the-executor](https://docs.gitlab.com/runner/executors/#selecting-the-executor).
 
-## Troubleshooting
+## Troubleshooting--故障排除
 
 Read the [FAQ](https://docs.gitlab.com/runner/faq/).
 
-## Advanced Configuration
+## Advanced Configuration--高级配置
 
 See [https://docs.gitlab.com/runner/#advanced-configuration](https://docs.gitlab.com/runner/#advanced-configuration).
 
-## Changelog
+## Changelog--变更日志
 
 Visit the [Changelog](CHANGELOG.md) to view recent changes.
 
-## The future
+## The future--未来
 
 * Please see the [GitLab Direction page](https://about.gitlab.com/direction/).
 * Feel free submit issues with feature proposals on the issue tracker.
