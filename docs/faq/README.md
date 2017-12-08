@@ -2,6 +2,8 @@
 
 Some Frequently Asked Questions about GitLab Runner.
 
+以下是一些有关GitLab Runner常问的问题。
+
 ## What does `coordinator` mean?
 
 The `coordinator` is the GitLab installation from which a job is requested.
