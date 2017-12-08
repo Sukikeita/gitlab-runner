@@ -89,13 +89,13 @@ Visit the [Changelog](CHANGELOG.md) to view recent changes.
 * Please see the [GitLab Direction page](https://about.gitlab.com/direction/).
 * Feel free submit issues with feature proposals on the issue tracker.
 
-## Author
+## Author--作者
 
 ```
 2014 - 2015   : [Kamil Trzciński](mailto:ayufan@ayufan.eu)
 2015 - now    : GitLab Inc. team and contributors
 ```
 
-## License
+## License--证书
 
 This code is distributed under the MIT license, see the [LICENSE](LICENSE) file.
