@@ -1,26 +1,31 @@
-# GitLab Runner monitoring
+# GitLab Runner monitoring--GitLab Runner的监控
 
 GitLab Runner can be monitored using [Prometheus].
+GitLab Runner可以使用[Prometheus]监控。
 
-## Embedded Prometheus metrics
+## Embedded Prometheus metrics--启用Prometheus指标
 
 > The embedded HTTP Statistics Server with Prometheus metrics was
-introduced in GitLab Runner 1.8.0.
+introduced in GitLab Runner 1.8.0.使用Prometheus指标启动HTTP静态服务器是从1.8.0版本开始引入的
 
 The GitLab Runner is instrumented with native Prometheus
 metrics, which can be exposed via an embedded HTTP server on the `/metrics`
 path. The server - if enabled - can be scraped by the Prometheus monitoring
 system or accessed with any other HTTP client.
 
-The exposed information includes:
+GitLab Runner配有本地Prometheus度量标准，可以通过/metrics路径上的嵌入式HTTP服务器公开。 服务器（如果启用的话）可以被Prometheus监控系统窃取，或者被任何其他的HTTP客户端访问。
 
-- Runner business logic metrics (e.g., the number of currently running builds)
-- Go-specific process metrics (garbage collection stats, goroutines, memstats, etc.)
-- general process metrics (memory usage, CPU usage, file descriptor usage, etc.)
-- build version information
+The exposed information includes:
+展示的信息有：
+- Runner business logic metrics (e.g., the number of currently running builds)--运行器业务逻辑度量标准（例如，当前正在运行的版本的数量）
+- Go-specific process metrics (garbage collection stats, goroutines, memstats, etc.)--Go语言特点的流程指标（垃圾收集统计，goroutines，memstats等）
+- general process metrics (memory usage, CPU usage, file descriptor usage, etc.)--一般过程度量（内存使用情况，CPU使用情况，文件描述符使用情况等）
+- build version information--构建版本信息
 
 The following is an example of the metrics output in Prometheus'
 text-based metrics exposition format:
+
+以下是Prometheus基于文本的指标说明格式输出的度量示例：
 
 ```
 # HELP ci_docker_machines The total number of machines created.
@@ -159,13 +164,17 @@ metric. This metrics format is documented in Prometheus'
 [Exposition formats](https://prometheus.io/docs/instrumenting/exposition_formats/)
 specification.
 
+请注意，以`# HELP`开头的行记录了每个公开的度量的含义。 这个度量格式在Prometheus的“Exposition formats specification”中有记录。
+
 These metrics are meant as a way for operators to monitor and gain insight into
 GitLab Runners. For example, you may be interested if the load average increase
 on your runner's host is related to an increase of processed builds or not. Or
 you are running a cluster of machines to be used for the builds and you want to
 track build trends to plan changes in your infrastructure.
 
-### Learning more about Prometheus
+这些指标意味着运营商可以监控和了解GitLab Runner。 例如，如果您的Runner的平均负载增加，你会对这是否与已处理构建的增加有关感兴趣。 或者您正在运行用于构建的一组机器，并且您想要跟踪构建趋势以规划基础结构中的变化。
+
+### Learning more about Prometheus--了解Prometheus更多
 
 To learn how to set up a Prometheus server to scrape this HTTP endpoint and
 make use of the collected metrics, see Prometheus's [Getting
@@ -176,53 +185,71 @@ on [Alerting rules](https://prometheus.io/docs/alerting/rules/) and setting up
 an [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) to
 dispatch alert notifications.
 
-## `pprof` HTTP endpoints
+要了解如何设置Prometheus服务器来抓取此HTTP端点并使用收集的指标，请参阅Prometheus的入门指南。 有关如何配置Prometheus的更多详细信息，另请参阅“配置”部分，以及有关警报规则和设置Alertmanager以分派警报通知的部分。
 
-> `pprof` integration was introduced in GitLab Runner 1.9.0.
+
+## `pprof` HTTP endpoints--pprof HTTP端点
+
+> `pprof` integration was introduced in GitLab Runner 1.9.0. 在GitLab Runner 1.9.0中引入了pprof集成。
 
 While having metrics about internal state of Runner process is useful
 we've found that in some cases it would be good to check what is happening
 inside of the Running process in real time. That's why we've introduced
 the `pprof` HTTP endpoints.
 
+虽然有关Runner进程内部状态的指标很有用，但我们发现，在某些情况下，最好能够实时检查Running进程内正在发生的事情。 这就是为什么我们引入了pprof HTTP端点。
+
 `pprof` endpoints will be available via an embedded HTTP server on `/debug/pprof/`
 path.
 
-You can read more about using `pprof` in its [documentation][go-pprof].
+pprof端点将通过`/debug/pprof/`路径上的嵌入式HTTP服务器提供服务。
 
-## Configuration of the metrics HTTP server
+You can read more about using `pprof` in its [documentation][go-pprof].
+您可以阅读更多关于在其文档中使用pprof的信息。
+
+
+## Configuration of the metrics HTTP server--度量HTTP服务器的配置
 
 > **Note:**
 The metrics server exports data about the internal state of the
 GitLab Runner process and should not be publicly available!
+度量服务器导出的有关GitLab Runner进程内部状态的数据，不应公开提供！
 
 The metrics HTTP server can be configured in two ways:
+度量服务器可用以下方式配置：
 
-- with a `metrics_server` global configuration option in `config.toml` file,
-- with a `--metrics-server` command line option for the `run` command.
+- with a `metrics_server` global configuration option in `config.toml` file,--在`config.toml`文件中设置`metrics_server`全量配置
+- with a `--metrics-server` command line option for the `run` command.在`run`命令中加上`--metrics-server`选项
 
 In both cases the option accepts a string with the format `[host]:<port>`,
 where:
+以上方式可接受`[host]:<port>`格式的选项
 
-- `host` can be an IP address or a host name,
+- `host` can be an IP address or a host name,`host`可以是IP地址或主机名
 - `port` is a valid TCP port or symbolic service name (like `http`). We recommend to use port `9252` which is already [allocated in Prometheus](https://github.com/prometheus/prometheus/wiki/Default-port-allocations).
-
+--`port`是可用的TCP端口或服务名链接（如，`http`）。我们推荐使用`9252`端口，因为此端口已在
 If the metrics server address does not contain a port, it will default to `9252`.
+如果度量服务器地址不包含端口，则默认为9252。
 
 Examples of addresses:
+地址样例：
 
-- `:9252` - will listen on all IPs of all interfaces on port `9252`
-- `localhost:9252` - will only listen on the loopback interface on port `9252`
-- `[2001:db8::1]:http` - will listen on IPv6 address `[2001:db8::1]` on the HTTP port `80`
+- `:9252` - will listen on all IPs of all interfaces on port `9252`--将监听 `9252`端口中的所有接口的IP
+- `localhost:9252` - will only listen on the loopback interface on port `9252`--将只在端口9252上的回送接口上进行监听
+- `[2001:db8::1]:http` - will listen on IPv6 address `[2001:db8::1]` on the HTTP port `80`--将监听HTTP端口`80`上的`[2001:db8::1]`IPv6地址
 
 Remember that for listening on ports below `1024` - at least on Linux/Unix
 systems - you need to have root/administrator rights.
+
+请记住，要监听1024以下的端口 - 至少在Linux/Unix系统上 - 您需要拥有root或管理员权限。
 
 Also please notice, that HTTP server is opened on selected `host:port`
 **without any authorization**. If you plan to bind the metrics server
 to a public interface then you should consider to use your firewall to
 limit access to this server or add a HTTP proxy which will add the
 authorization and access control layer.
+
+另外请注意，该HTTP服务器可在选定的`host:port`上打开而无需任何授权。 如果您打算将度量服务器绑定到公共接口，则应考虑使用防火墙来限制对此服务器的访问，或者添加一个将添加授权和访问控制层的HTTP代理。
 
 [go-pprof]: https://golang.org/pkg/net/http/pprof/
 [prometheus]: https://prometheus.io
