@@ -3,7 +3,11 @@
 GitLab Runner contains a set of commands with which you register, manage and
 run your builds.
 
+GitLab Runner包含一组用来注册，管理和运行你的构建的命令。
+
 You can check a recent list of commands by executing:
+
+您可以通过执行以下命令来检查最近的命令列表：
 
 ```bash
 gitlab-runner --help
@@ -11,24 +15,32 @@ gitlab-runner --help
 
 Append `--help` after a command to see its specific help page:
 
+在命令后附加--help以查看其特定的帮助页面：
+
 ```bash
 gitlab-runner <command> --help
 ```
 
-## Using environment variables
+## Using environment variables 使用环境变量
 
 Most of the commands support environment variables as a method to pass the
 configuration to the command.
 
+大多数命令支持环境变量作为将配置传递给命令的方法。
+
 You can see the name of the environment variable when invoking `--help` for a
 specific command. For example, you can see below the help message for the `run`
 command:
+
+您可以在特定的命令调用`--help`时看到环境变量的名称。 例如，您可以在下面看到运行命令的帮助信息：
 
 ```bash
 gitlab-runner run --help
 ```
 
 The output would be similar to:
+
+将输出类似于：
 
 ```bash
 NAME:
@@ -41,10 +53,12 @@ OPTIONS:
    -c, --config "/Users/ayufan/.gitlab-runner/config.toml"	Config file [$CONFIG_FILE]
 ```
 
-## Running in debug mode
+## Running in debug mode 以debug模式运行runner
 
 Debug mode is especially useful when looking for the cause of some undefined
 behavior or error.
+
+当查找一些未定义的行为或错误的原因时，调试模式特别有用。
 
 To run a command in debug mode, prepend the command with `--debug`:
 
