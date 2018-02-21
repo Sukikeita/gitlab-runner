@@ -23,3 +23,4 @@ Push some commits to test it.
 
 For [advanced configuration](../configuration/advanced-configuration.md), look into
 `/etc/gitlab-runner/config.toml` and tune it.
+高级配置内容可在/etc/gitlab-runner/config.toml调整。
